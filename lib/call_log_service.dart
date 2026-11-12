@@ -3,23 +3,16 @@ import 'package:permission_handler/permission_handler.dart';
 
 class CallLogService {
   static Future<List<CallLogEntry>> getTodaysMissedCalls() async {
-    // Request Call Log & Phone permissions
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.phone,
-    ].request();
+    // call_log access requires Android call-log/phone permission.
+    final status = await Permission.phone.request();
+    if (!status.isGranted) return [];
 
-    if (statuses[Permission.phone] != PermissionStatus.granted) {
-      return [];
-    }
-
-    // Get timestamp for midnight today (00:00:00)
     final now = DateTime.now();
     final startOfToday = DateTime(now.year, now.month, now.day);
-    final fromTimestamp = startOfToday.millisecondsSinceEpoch;
 
-    // Fetch missed calls from today onwards
     final entries = await CallLog.query(
-      dateFrom: fromTimestamp,
+      dateFrom: startOfToday.millisecondsSinceEpoch,
+      dateTo: now.millisecondsSinceEpoch,
       type: CallType.missed,
     );
 

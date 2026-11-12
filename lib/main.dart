@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'caller_tracker_sync_service.dart';
 import 'todays_missed_calls_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await CallerTrackerSyncService.initialize();
+
   runApp(const MyApp());
 }
 
